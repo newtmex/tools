@@ -5,6 +5,27 @@ const block_halving = 210000; // Number of blocks before reward halving
 
 var block_height = 558216; // Current height; TODO add a way to get the current height automatically
 
+if(process.argv[2]){
+  ic(process.argv[2]);
+}else{
+  console.log(`
+  Using default height: ${block_height}
+  To run with custom height type:
+     ${process.argv[1]} [block_height]
+
+  `)
+}
+function ic(input){
+  let nInput = input;
+  input = Number(input);
+    if(isNaN(input)){
+      console.log(`${nInput} is invalid. Please enter a number as [block_height].`);
+      process.exit();
+    } else {
+      block_height = input;
+    }
+}
+
 let blocks_to_next_halving = block_height % block_halving; // This could be equals to block_height if block_height <= block_halving
 let halving_times = Math.floor(block_height / block_halving);
 let current_reward = initial_reward / Math.pow(halving_factor, halving_times);
