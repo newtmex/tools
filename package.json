@@ -1,0 +1,12 @@
+{
+  "name": "mextools",
+  "version": "0.1.0",
+  "description": "A suite of tools I built with Node.js",
+  "main": "mextools.js",
+  "repository": "https://github.com/newtmex/tools.git",
+  "author": "newtmex levi@techypharm.com",
+  "license": "MIT",
+  "dependencies": {
+    "commander": "^2.19.0"
+  }
+}

@@ -1,29 +1,37 @@
-#!/usr/local/bin/node
+#!/usr/bin/env node
+const program = require('commander');
+
 const halving_factor = 2;
 const initial_reward = 50;
 const block_halving = 210000; // Number of blocks before reward halving
 
 var block_height = 558216; // Current height; TODO add a way to get the current height automatically
 
-if (process.argv[2]) {
-  ic(process.argv[2]);
-} else {
-  console.log(`
-  Using default height: ${block_height}
-  To run with custom height type:
-     ${process.argv[1]} [block_height] [-1]
-      the -1 is optional and is used to change the order of 'Other stats' section.
-  `)
-}
-function ic(input) {
-  let nInput = input;
-  input = Number(input);
-  if (isNaN(input)) {
+program
+  .version('0.1.0')
+  .option('-h, --height [value]', 'Block height to calculate from')
+  .option('-a, --asc', 'Orders the round in ascending order')
+  .parse(process.argv)
+
+/**
+ * Process options
+ */
+if(program.height) {
+  let nInput = program.height;
+  program.height = Number(program.height);
+  if (isNaN(program.height)) {
     console.log(`${nInput} is invalid. Please enter a number as [block_height].`);
     process.exit();
   } else {
-    block_height = input;
+    block_height = program.height;
   }
+} else {
+  console.log(`
+
+  Using default height: ${block_height}
+  (To enter a custom height use the flag -h followed by the block height)
+
+  `)
 }
 
 let blocks_to_next_halving = block_height % block_halving; // This could be equals to block_height if block_height <= block_halving
@@ -40,7 +48,7 @@ let periodStats = [{
   period_supply: current_supply,
   halving_times: halving_times
 }]; // Populate with the current period
-console.log({ period_reward: periodStats[0].period_reward });
+console.log({ ...periodStats[0] });
 
 // Add rewards from previous periods if this is not the first period
 for (let period = current_period; period > 1;) {
@@ -49,7 +57,8 @@ for (let period = current_period; period > 1;) {
   let period_reward = initial_reward / Math.pow(halving_factor, halving_times);
   let period_supply = period_reward * block_halving; // Using block halving because it is expected that all the blocks for this period is already mined
 
-  if (process.argv[3] && process.argv[3] == -1) {
+  // Decide what order the periods should be added
+  if (!program.asc) {
     periodStats.push({
       period: period,
       period_reward: period_reward,
@@ -69,4 +78,4 @@ for (let period = current_period; period > 1;) {
 }
 
 console.log({ total_supply });
-console.log('Other stats:\n', periodStats);
+console.log('\nOther stats:\n', periodStats);
